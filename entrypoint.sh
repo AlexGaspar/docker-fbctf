@@ -7,6 +7,7 @@ chmod 777 "$CTF_PATH/src/data/attachments" \
     && chmod 777 "$CTF_PATH/src/data/attachments/deleted"
 
 # Configure HHVM
+chown -R www-data:www-data /etc/hhvm/*
 cat "$CTF_PATH/extra/hhvm.conf" | sed "s|CTFPATH|$CTF_PATH/|g" | tee /etc/hhvm/server.ini
 
 # Configure nginx
@@ -40,6 +41,6 @@ cat "$CTF_PATH/settings.env.ini" \
   | sed "s/MEMCACHED_PORT/$MEMCACHED_PORT/g" \
   > "$CTF_PATH/settings.ini"
 
-service hhvm restart > /dev/null
+sudo -u www-data hhvm --config /etc/hhvm/server.ini --mode daemon
 
 exec "$@"
