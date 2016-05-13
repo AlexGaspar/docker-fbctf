@@ -19,8 +19,8 @@ RUN git clone --depth 1 $CTF_REPO .
 RUN composer install
 
 # Make attachments folder world writable
-RUN chmod 777 "$CTF_PATH/src/data/attachments" && \
-    chmod 777 "$CTF_PATH/src/data/attachments/deleted"
+RUN chmod 777 "$CTF_PATH/src/data/attachments" \
+    && chmod 777 "$CTF_PATH/src/data/attachments/deleted"
 
 RUN npm install && npm install -g grunt && npm install -g flow-bin
 RUN grunt
@@ -41,6 +41,17 @@ RUN rm /etc/nginx/sites-enabled/* \
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 
+# Configure FBCTL
+COPY settings.env.ini .
+
+# Launch HHVM
+RUN service hhvm start
+
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
 EXPOSE 80 443
+
+ENTRYPOINT ["./entrypoint.sh"]
+
 CMD ["nginx", "-g", "daemon off;"]
