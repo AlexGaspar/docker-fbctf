@@ -18,33 +18,15 @@ RUN git clone --depth 1 $CTF_REPO .
 # Install Vendors
 RUN composer install
 
-# Make attachments folder world writable
-RUN chmod 777 "$CTF_PATH/src/data/attachments" \
-    && chmod 777 "$CTF_PATH/src/data/attachments/deleted"
-
+# Build assets
 RUN npm install && npm install -g grunt && npm install -g flow-bin
 RUN grunt
 
-# Configure HHVM
-RUN cat "$CTF_PATH/extra/hhvm.conf" | sed "s|CTFPATH|$CTF_PATH/|g" | tee /etc/hhvm/server.ini
-
-# Update permissions
-RUN chown -R www-data:www-data /var/www/*
-
-# Configure nginx
-#RUN cat "$CTF_PATH/extra/nginx.conf" | sed "s|CTFPATH|$CTF_PATH/src|g" | tee /etc/nginx/sites-available/fbctf.conf
+# Add nginx configuration
 COPY fbctf.conf /etc/nginx/sites-available/
-RUN rm /etc/nginx/sites-enabled/* \
-    && ln -s /etc/nginx/sites-available/fbctf.conf /etc/nginx/sites-enabled/fbctf.conf
 
-# Forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
+COPY ["settings.env.ini", "entrypoint.sh", "./"]
 
-# Configure FBCTL
-COPY settings.env.ini .
-
-COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
 EXPOSE 80

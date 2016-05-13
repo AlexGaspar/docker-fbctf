@@ -2,7 +2,24 @@
 
 source "$CTF_PATH/extra/lib.sh"
 
-# Set linked container as host
+# Make attachments folder world writable
+chmod 777 "$CTF_PATH/src/data/attachments" \
+    && chmod 777 "$CTF_PATH/src/data/attachments/deleted"
+
+# Configure HHVM
+cat "$CTF_PATH/extra/hhvm.conf" | sed "s|CTFPATH|$CTF_PATH/|g" | tee /etc/hhvm/server.ini
+
+# Configure nginx
+chown -R www-data:www-data /var/www/*
+# cat "$CTF_PATH/extra/nginx.conf" | sed "s|CTFPATH|$CTF_PATH/src|g" | tee /etc/nginx/sites-available/fbctf.conf
+rm /etc/nginx/sites-enabled/* \
+  && ln -s /etc/nginx/sites-available/fbctf.conf /etc/nginx/sites-enabled/fbctf.conf
+
+# Forward request and error logs to docker log collector
+ln -sf /dev/stdout /var/log/nginx/access.log \
+  && ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Set linked mysql container as mysql host
 echo -e "[client]\nhost=mysql" > ~/.my.cnf
 
  # Database creation
