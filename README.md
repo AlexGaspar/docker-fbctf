@@ -21,6 +21,7 @@ docker-compose up
  docker run --name fbctf-mysql -d \
      --env MYSQL_ROOT_PASSWORD=root --env MYSQL_DATABASE=fbctf \
      --env MYSQL_USER=fbctf --env MYSQL_PASSWORD=fbctf \
+     --volume /opt/docker/fbctf/mysql:/var/lib/mysql \
      mysql:5.5
  ```
 
