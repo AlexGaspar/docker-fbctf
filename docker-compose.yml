@@ -1,6 +1,6 @@
 mysql:
   restart: always
-  image: mysql
+  image: mysql:5.5
   environment:
     - MYSQL_ROOT_PASSWORD=root
     - MYSQL_DATABASE=fbctf
@@ -21,7 +21,6 @@ fbctf:
     - MYSQL_DATABASE=fbctf
     - MYSQL_USER=fbctf
     - MYSQL_PASSWORD=fbctf
-    - MEMCACHED_HOST=memcached
     - MEMCACHED_PORT=11211
   ports:
     - "10080:80"

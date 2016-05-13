@@ -4,7 +4,7 @@ ENV CTF_PATH /var/www/fbctf
 ENV DEBIAN_FRONTEND noninteractive
 ENV CTF_REPO https://github.com/facebook/fbctf.git
 
-RUN apt-get update && apt-get install -y --force-yes curl language-pack-en git npm nodejs-legacy nginx
+RUN apt-get update && apt-get install -y --force-yes curl language-pack-en git npm nodejs-legacy nginx mysql-client
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -44,13 +44,10 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 # Configure FBCTL
 COPY settings.env.ini .
 
-# Launch HHVM
-RUN service hhvm start
-
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-EXPOSE 80 443
+EXPOSE 80
 
 ENTRYPOINT ["./entrypoint.sh"]
 
