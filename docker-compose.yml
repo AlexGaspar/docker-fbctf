@@ -1,0 +1,28 @@
+mysql:
+  restart: always
+  image: mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=fbctf
+    - MYSQL_USER=fbctf
+    - MYSQL_PASSWORD=fbctf
+memcached:
+  restart: always
+  image: memcached
+fbctf:
+  restart: always
+  image: fbctf
+  links:
+    - memcached:memcached
+    - mysql:mysql
+  environment:
+    - MYSQL_HOST=mysql
+    - MYSQL_PORT=3306
+    - MYSQL_DATABASE=fbctf
+    - MYSQL_USER=fbctf
+    - MYSQL_PASSWORD=fbctf
+    - MEMCACHED_HOST=memcached
+    - MEMCACHED_PORT=11211
+  ports:
+    - "10080:80"
+    - "10443:443"
