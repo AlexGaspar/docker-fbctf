@@ -23,13 +23,13 @@ RUN npm install && npm install -g grunt && npm install -g flow-bin
 RUN grunt
 
 # Add nginx configuration
-COPY fbctf.conf /etc/nginx/sites-available/
+COPY ["fbctf.conf", "fbctf_ssl.tmpl.conf", "/etc/nginx/sites-available/"];
 
 COPY ["settings.env.ini", "entrypoint.sh", "./"]
 
 RUN chmod +x entrypoint.sh
 
-EXPOSE 80
+EXPOSE 80 443
 
 ENTRYPOINT ["./entrypoint.sh"]
 
