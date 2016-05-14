@@ -23,13 +23,18 @@ ln -sf /dev/stdout /var/log/nginx/access.log \
 # Set linked mysql container as mysql host
 echo -e "[client]\nhost=mysql" > ~/.my.cnf
 
- # Database creation
+ # Wait for the mysql container to be ready
 while ! nc -z mysql 3306; do
   echo "Waiting for mysql to start";
-  sleep 3;
+  sleep 1;
 done;
 
-import_empty_db "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$CTF_PATH" "prod"
+# Don't errase the database if it exists
+if $(mysqlshow -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE &> /dev/null); then
+  echo "Database already created... skipping creation..."
+else
+  import_empty_db "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$CTF_PATH" "prod"
+fi
 
 # Configuring settings.ini
 cat "$CTF_PATH/settings.env.ini" \
