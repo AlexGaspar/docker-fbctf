@@ -23,9 +23,9 @@ RUN npm install && npm install -g grunt && npm install -g flow-bin
 RUN grunt
 
 # Add nginx configuration
-COPY ["fbctf.conf", "fbctf_ssl.tmpl.conf", "/etc/nginx/sites-available/"];
+COPY ["templates/fbctf.conf", "templates/fbctf_ssl.tmpl.conf", "/etc/nginx/sites-available/"];
 
-COPY ["settings.env.ini", "entrypoint.sh", "./"]
+COPY ["templates/settings.tmpl.ini", "entrypoint.sh", "./"]
 
 RUN chmod +x entrypoint.sh
 

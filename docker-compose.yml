@@ -22,7 +22,7 @@ fbctf:
     - MYSQL_USER=fbctf
     - MYSQL_PASSWORD=fbctf
     - MEMCACHED_PORT=11211
-    - SSL=true
+    - SSL_SELF_SIGNED=true
   ports:
     - "80:80"
     - "443:443"

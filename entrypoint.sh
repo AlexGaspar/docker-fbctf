@@ -14,7 +14,7 @@ cat "$CTF_PATH/extra/hhvm.conf" | sed "s|CTFPATH|$CTF_PATH/|g" | tee /etc/hhvm/s
 chown -R www-data:www-data /var/www/*
 rm /etc/nginx/sites-enabled/*
 
-if ${SSL:=true}; then
+if ${SSL_SELF_SIGNED:=true}; then
   echo "Generating self-signed certificate..."
   __country=${SSL_COUNTRY:-"UK"}
   __city=${SSL_CITY:-"London"}
@@ -31,7 +31,7 @@ if ${SSL:=true}; then
     -subj "/C=$__country/ST=NRW/L=$__city/O=My Inc/OU=DevOps/CN=www.$__url/emailAddress=$__email"
   openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
   openssl dhparam -out dhparam.pem 2048
-  cd - # restore directory
+  cd - > /dev/null # restore directory
 
   cat "/etc/nginx/sites-available/fbctf_ssl.tmpl.conf" | sed "s|CTFPATH|$CTF_PATH/src|g" | tee /etc/nginx/sites-available/fbctf-ssl.conf > /dev/null
   ln -s /etc/nginx/sites-available/fbctf-ssl.conf /etc/nginx/sites-enabled/fbctf-ssl.conf
@@ -60,7 +60,7 @@ else
 fi
 
 # Configuring settings.ini
-cat "$CTF_PATH/settings.env.ini" \
+cat "$CTF_PATH/settings.tmpl.ini" \
   | sed "s/MYSQL_PORT/$MYSQL_PORT/g" \
   | sed "s/MYSQL_DATABASE/$MYSQL_DATABASE/g" \
   | sed "s/MYSQL_USER/$MYSQL_USER/g" \
