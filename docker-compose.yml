@@ -11,7 +11,7 @@ memcached:
   image: memcached
 fbctf:
   restart: always
-  image: fbctf
+  image: alexgaspar/fbctf
   links:
     - memcached:memcached
     - mysql:mysql
