@@ -2,15 +2,24 @@
 
 Dockerfile to build a [facebook CTF](https://github.com/facebook/fbctf) container image.
 
+# Contributing
+
+If you find this image useful here's how you can help:
+
+- Send a Pull Request with your awesome new features and bug fixes
+- Help new users with [Issues](https://github.com/AlexGaspar/docker-fbctf/issues) they may encounter
+
 # Quick Start
 
-fbctf needs to be server over https, so by default it would generate a self-signed certificate, if you want to use your own certificate you can turn this off by setting `$SSL` to `false`, then fbctf container will only server request over :80, so you can do the SSL termination where ever you prefer.
+The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/).
 
 Using docker-compose
 
 ```bash
 docker-compose up
 ```
+
+Alternatively, you can manually launch the `fbctl` container and the supporting `mysql` and `memcached` containers by following this three step guide.
 
  Step 1. Launch a mysql container
 
@@ -39,3 +48,9 @@ docker-compose up
      --env MEMCACHED_PORT=11211 \
      alexgaspar/fbctf:latest
  ```
+ 
+# Configuration
+
+## SSL
+fbctf requires you to server the application over HTTPS (otherwise the sessions will not work properly). By default docker-fbctf will generate self signed certificate to meet this requirement, in this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. If you know your way arround SSL certificate, you can disable it by setting `SSL_SELF_SIGNED` to `false`.
+
