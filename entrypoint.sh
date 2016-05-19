@@ -53,8 +53,10 @@ while ! nc -z mysql 3306; do
 done;
 
 # Don't errase the database if it exists
-if $(mysqlshow -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE &> /dev/null); then
-  echo "Database already created... skipping creation..."
+if [ $(mysql -N -s -u $MYSQL_USER --password=$MYSQL_PASSWORD -e \
+    "select count(*) from information_schema.tables where \
+        table_schema='$MYSQL_DATABASE';") -ge 1 ]; then
+    echo "Database already created... skipping creation..."
 else
   import_empty_db "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$CTF_PATH" "prod"
 fi
