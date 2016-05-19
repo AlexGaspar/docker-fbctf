@@ -37,6 +37,7 @@ if ${SSL_SELF_SIGNED:=true}; then
   ln -s /etc/nginx/sites-available/fbctf-ssl.conf /etc/nginx/sites-enabled/fbctf-ssl.conf
 else
   ln -s /etc/nginx/sites-available/fbctf.conf /etc/nginx/sites-enabled/fbctf.conf
+  sed -i -r -e '/private static bool \$s_secure/ {s/true/false/}' /var/www/fbctf/src/SessionUtils.php
 fi
 
 # Forward request and error logs to docker log collector
