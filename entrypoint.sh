@@ -53,7 +53,7 @@ while ! nc -z mysql 3306; do
   sleep 1;
 done;
 
-# Don't errase the database if it exists
+# Don't errase the database if it exists & has table
 if [ $(mysql -N -s -u $MYSQL_USER --password=$MYSQL_PASSWORD -e \
     "select count(*) from information_schema.tables where \
         table_schema='$MYSQL_DATABASE';") -ge 1 ]; then
