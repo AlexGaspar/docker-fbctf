@@ -37,7 +37,7 @@ if ${SSL_SELF_SIGNED:=true}; then
   ln -s /etc/nginx/sites-available/fbctf-ssl.conf /etc/nginx/sites-enabled/fbctf-ssl.conf
 else
   ln -s /etc/nginx/sites-available/fbctf.conf /etc/nginx/sites-enabled/fbctf.conf
-  sed -i -r -e '/private static bool \$s_secure/ {s/true/false/}' /var/www/fbctf/src/SessionUtils.php
+  sed -i -r -e '/private static bool \$s_secure/ {s/true/false/}' $CTF_PATH/src/SessionUtils.php
 fi
 
 # Forward request and error logs to docker log collector
@@ -45,26 +45,29 @@ ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
 
 # Set linked mysql container as mysql host
-echo -e "[client]\nhost=mysql" > ~/.my.cnf
+
+echo -e "[client]\nhost=$MYSQL_HOST" > ~/.my.cnf
 
  # Wait for the mysql container to be ready
-while ! nc -z mysql 3306; do
-  echo "Waiting for mysql to start";
+while ! mysqlshow -u$MYSQL_USER -p$MYSQL_PASSWORD > /dev/null 2>&1; do
+  echo "Waiting for mysql to be ready";
   sleep 1;
 done;
 
-# Don't errase the database if it exists
+# Don't errase the database if it exists & has table
 if [ $(mysql -N -s -u $MYSQL_USER --password=$MYSQL_PASSWORD -e \
     "select count(*) from information_schema.tables where \
         table_schema='$MYSQL_DATABASE';") -ge 1 ]; then
     echo "Database already created... skipping creation..."
 else
+echo "creating DB"
   import_empty_db "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$CTF_PATH" "prod"
 fi
 
 # Configuring settings.ini
 cat "$CTF_PATH/settings.tmpl.ini" \
   | sed "s/MYSQL_PORT/$MYSQL_PORT/g" \
+  | sed "s/MYSQL_HOST/$MYSQL_HOST/g" \
   | sed "s/MYSQL_DATABASE/$MYSQL_DATABASE/g" \
   | sed "s/MYSQL_USER/$MYSQL_USER/g" \
   | sed "s/MYSQL_PASSWORD/$MYSQL_PASSWORD/g" \
